@@ -88,12 +88,11 @@ export default {
             }
         },
         draw(){
+            console.log(11111)
             var c3=document.getElementById("c3")
             var ctx=c3.getContext("2d")
             var c4=document.getElementById("c4")
             var ctx1=c4.getContext("2d")
-            //隔两秒随机改变num的值
-            //this.num=60+Math.floor(Math.random()*100)
             //绘制温度计外框
             //console.log(this.num)
             ctx.beginPath();
@@ -142,7 +141,6 @@ export default {
             ctx1.lineTo(200,150)
             if((160-this.num[0])>=80){
                 ctx1.strokeStyle="#f00"
-                //this.open()
                 this.$message({
                     message:"警告！警告！温度过高！请及时处理",
                     type:"error",
@@ -150,15 +148,13 @@ export default {
                 })
             }else if((160-this.num[0])>=50&&(160-this.num[0])<80){
                 ctx1.strokeStyle="#ff0"
-                //a3.pause()
                 this.$message({
                     message:"警告！温度增高，请注意",
                     type:"warning",
-                    duration:1500
+                    duration:1500                              
                 })
             }else{
                 ctx1.strokeStyle="#0f0"
-                //a3.pause()
             }
             ctx1.lineWidth=20
             ctx1.lineCap="round"
@@ -177,13 +173,6 @@ export default {
             ctx1.lineCap="round"
             ctx1.stroke()
         },
-        open() {
-            this.$message({
-                message:'警告！警告！温度过高！请及时处理！',
-                type: 'warning',
-		duration:1500
-            });
-        },
     },
     mounted() {
         var d=document.querySelector(".d")
@@ -193,28 +182,25 @@ export default {
         var h=d.offsetHeight;
         c3.width=w;c3.height=h;
         c4.width=w;c4.height=h;
-        var _this=this;
+        //var _this=this;
+        var time=document.querySelector(".time")
         setInterval(function(){
-            _this.nowtime= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
+            time.innerHTML= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
         },1000)
         
-    },
+},
     created() {
-        
         var url="ws://127.0.0.1:9001";
         var c=new WebSocket(url)
         var a=[100]
         c.onmessage=function(e){
             a.unshift(parseInt(e.data))
         }
-        //console.log(a)
         this.num=a;
-        //console.log(this.num)
+        
     },
-    updated() {
-        //this.changeTime() 
+    updated(){
         this.draw()  
-           
     },
 }
 </script>
