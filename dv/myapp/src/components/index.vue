@@ -41,7 +41,8 @@
 						<div class="chart-wrapper">
 							<h3 class="chart-title">温度折线图</h3>
 							<div class="chart-div">
-
+                                <canvas id="c1"></canvas>
+                                <canvas id="c2"></canvas>
 							</div>
 						</div>
 					</div>
@@ -181,7 +182,7 @@ export default {
             this.$message({
                 message:'警告！警告！温度过高！请及时处理！',
                 type: 'warning',
-		duration:1500
+		        duration:1500
             });
         },
     },
@@ -189,10 +190,13 @@ export default {
         var d=document.querySelector(".d")
         var c3=document.getElementById("c3")
         var c4=document.getElementById("c4")
+        var c1=document.getElementById("c1")
+        var c2=document.getElementById("c2")
         var w=d.offsetWidth;
         var h=d.offsetHeight;
         c3.width=w;c3.height=h;
         c4.width=w;c4.height=h;
+        c1.width=w;c1.height=h;
         var _this=this;
         setInterval(function(){
             _this.nowtime= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
