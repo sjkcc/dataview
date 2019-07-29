@@ -16,7 +16,7 @@
 					</div>
 					<div class="flex-cell flex-cell-c">
 						<div class="chart-wrapper">
-							<h3 class="chart-title">实时温度 {{160-num[0]}}℃</h3>
+							<h3 class="chart-title">实时温度 {{260-num[0]}}℃</h3>
 							<div class="chart-div">
                                 <div class="d">
                                     <canvas id="c3"></canvas>
@@ -74,7 +74,7 @@ export default {
     methods: {
         onchange(){
             var a3=document.getElementById("a3")
-            if((160-this.num[0])>=80){
+            if((260-this.num[0])>=80){
                 a3.play();
             }else{
                 a3.pause()
@@ -207,6 +207,7 @@ export default {
         var a=[100]
         c.onmessage=function(e){
             a.unshift(parseInt(e.data))
+            //console.log(e)
         }
         //console.log(a)
         this.num=a;

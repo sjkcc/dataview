@@ -2,11 +2,13 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Index from "./components/index.vue"
+import Index1 from "./components/index1.vue"
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {path:"/Index",component:Index},
+    {path:"/Index1",component:Index1},
     {
       path: '/',
       name: 'home',

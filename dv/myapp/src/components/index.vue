@@ -41,8 +41,10 @@
 						<div class="chart-wrapper">
 							<h3 class="chart-title">温度折线图</h3>
 							<div class="chart-div">
-                                <canvas id="c1"></canvas>
-                                <canvas id="c2"></canvas>
+                                <div class="d">
+                                    <canvas id="c1"></canvas>
+                                <!-- <canvas id="c2"></canvas> -->
+                                </div>
 							</div>
 						</div>
 					</div>
@@ -93,8 +95,6 @@ export default {
             var ctx=c3.getContext("2d")
             var c4=document.getElementById("c4")
             var ctx1=c4.getContext("2d")
-            //隔两秒随机改变num的值
-            //this.num=60+Math.floor(Math.random()*100)
             //绘制温度计外框
             //console.log(this.num)
             ctx.beginPath();
@@ -143,7 +143,6 @@ export default {
             ctx1.lineTo(200,150)
             if((160-this.num[0])>=80){
                 ctx1.strokeStyle="#f00"
-                //this.open()
                 this.$message({
                     message:"警告！警告！温度过高！请及时处理",
                     type:"error",
@@ -151,15 +150,13 @@ export default {
                 })
             }else if((160-this.num[0])>=50&&(160-this.num[0])<80){
                 ctx1.strokeStyle="#ff0"
-                //a3.pause()
                 this.$message({
                     message:"警告！温度增高，请注意",
                     type:"warning",
-                    duration:1500
+                    duration:1500                              
                 })
             }else{
                 ctx1.strokeStyle="#0f0"
-                //a3.pause()
             }
             ctx1.lineWidth=20
             ctx1.lineCap="round"
@@ -178,13 +175,13 @@ export default {
             ctx1.lineCap="round"
             ctx1.stroke()
         },
-        open() {
-            this.$message({
-                message:'警告！警告！温度过高！请及时处理！',
-                type: 'warning',
-		        duration:1500
-            });
-        },
+        draw1(){
+            var c1=document.getElementById("c1")
+            var ctx=c1.getContext("2d")
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#395B73";
+        }
     },
     mounted() {
         var d=document.querySelector(".d")
@@ -196,29 +193,27 @@ export default {
         var h=d.offsetHeight;
         c3.width=w;c3.height=h;
         c4.width=w;c4.height=h;
-        c1.width=w;c1.height=h;
-        var _this=this;
+        c1.width=c1.parentElement.offsetWidth;c1.height=c1.parentElement.offsetHeight;
+        //var _this=this;
+        var time=document.querySelector(".time")
         setInterval(function(){
-            _this.nowtime= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
+            time.innerHTML= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
         },1000)
         
-    },
+},
     created() {
-        
         var url="ws://127.0.0.1:9001";
         var c=new WebSocket(url)
         var a=[100]
         c.onmessage=function(e){
             a.unshift(parseInt(e.data))
         }
-        //console.log(a)
         this.num=a;
-        //console.log(this.num)
+        
     },
-    updated() {
-        //this.changeTime() 
+    updated(){
         this.draw()  
-           
+        this.draw1()
     },
 }
 </script>
@@ -232,6 +227,9 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
+    }
+    #c1{
+        border:1px solid #ccc;
     }
     #header {
         position:relative;
