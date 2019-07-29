@@ -64,7 +64,7 @@ export default {
         return {
             num:[],
             check:true,
-            nowtime:new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+("0"+new Date().getSeconds()).slice(-2)
+            nowtime:new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
         }
     },
     watch: {
