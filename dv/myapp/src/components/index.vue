@@ -43,7 +43,7 @@
 							<div class="chart-div">
                                 <div class="d">
                                     <canvas id="c1"></canvas>
-                                <!-- <canvas id="c2"></canvas> -->
+                                    <canvas id="c2"></canvas>
                                 </div>
 							</div>
 						</div>
@@ -175,15 +175,126 @@ export default {
             ctx1.lineCap="round"
             ctx1.stroke()
         },
-        draw1(){
+        drawxy(){
             var c1=document.getElementById("c1")
             var ctx=c1.getContext("2d")
+            //绘制x轴和y轴
             ctx.beginPath();
             ctx.lineWidth = 2;
             ctx.strokeStyle = "#395B73";
+            ctx.moveTo(100,20);
+            ctx.lineTo(100,c1.offsetHeight-50);
+            ctx.lineTo(c1.offsetWidth-10,c1.offsetHeight-50);
+            ctx.stroke()
+            //绘制x轴的箭头
+            ctx.beginPath();
+            ctx.moveTo(100,20)
+            ctx.lineTo(90,40)
+            ctx.lineTo(110,40)
+            ctx.closePath()
+            ctx.lineWidth =5;
+            ctx.fillStyle="#395B73"
+            ctx.fill()
+            //绘制y轴的箭头
+            ctx.beginPath()
+            ctx.moveTo(c1.offsetWidth-10,c1.offsetHeight-50)
+            ctx.lineTo(c1.offsetWidth-30,c1.offsetHeight-60)
+            ctx.lineTo(c1.offsetWidth-30,c1.offsetHeight-40)
+            ctx.closePath()
+            ctx.lineWidth =5;
+            ctx.fillStyle="#395B73"
+            ctx.fill()
+            //绘制y轴文本
+            ctx.beginPath()
+            ctx.font="20px 黑体"
+            if(c1.offsetHeight<300){
+                ctx.fillText("0",70,c1.offsetHeight-50)
+                ctx.fillText("25",70,c1.offsetHeight-75)
+                ctx.fillText("50",70,c1.offsetHeight-100)
+                ctx.fillText("75",70,c1.offsetHeight-125)
+                ctx.fillText("100",60,c1.offsetHeight-150)
+            }else{
+                ctx.fillText("0",70,c1.offsetHeight-50)
+                ctx.fillText("25",70,c1.offsetHeight-100)
+                ctx.fillText("50",70,c1.offsetHeight-150)
+                ctx.fillText("75",70,c1.offsetHeight-200)
+                ctx.fillText("100",60,c1.offsetHeight-250)
+            }
+        },
+        draw1(){
+            var c2=document.getElementById("c2")
+            var ctx=c2.getContext("2d")
+            ctx.clearRect(0,0,c2.offsetWidth,c2.offsetHeight)
+            //绘制折线
+            for (var i=this.num.length-1,j=0;i>=0;i--){
+                //起始坐标
+                
+                //console.log(this.num[i],numsX,numsY,numsNX,numsNY)
+                var k=parseInt((c2.offsetWidth-200)/30)
+                if(j==k){
+                    ctx.clearRect(0,0,c2.offsetWidth,c2.offsetHeight)
+                    for(var i=k,j=0;i>0;i--){
+                        
+                        if(c2.offsetHeight<300){
+                            var numsY = c2.offsetHeight-50-(160-this.num[i])
+                            var numsNY = c2.offsetHeight-50-(160-this.num[i-1]);
+                        }else{
+                            var numsY = c2.offsetHeight-50-(160-this.num[i])*2;
+                            var numsNY = c2.offsetHeight-50-(160-this.num[i-1])*2;
+                        }
+                        var numsX = j*30+100;
+                        //终止坐标
+                        var numsNX = (j+1)*30+100;
+                        j++;
+                        ctx.beginPath();
+                        ctx.moveTo(numsX,numsY);
+                        ctx.lineTo(numsNX,numsNY);
+                        ctx.lineWidth = 6;
+                        ctx.strokeStyle = "#80aa33";
+                        ctx.closePath();
+                        ctx.stroke(); 
+                        ctx.beginPath()
+                        ctx.font="20px 黑体"
+                        ctx.fillStyle="#f00"
+                        console.log(i,160-this.num[i])
+                        if(j==k){
+                            ctx.fillText(160-this.num[i-1],numsX,numsNY)
+                        }else{
+                            ctx.fillText(160-this.num[i],numsX,numsY)
+                        }
+                        
+                        //console.log(j)
+                    }
+                }else{
+                    if(c2.offsetHeight<300){
+                        var numsY = c2.offsetHeight-50-(160-this.num[i])
+                        var numsNY = c2.offsetHeight-50-(160-this.num[i-1]);
+                    }else{
+                        var numsY = c2.offsetHeight-50-(160-this.num[i])*2;
+                        var numsNY = c2.offsetHeight-50-(160-this.num[i-1])*2;
+                    }
+                    var numsX = j*30+100;
+                    //终止坐标
+                    var numsNX = (j+1)*30+100;
+                }
+                j++; 
+                //console.log(j)
+                ctx.beginPath();
+                ctx.moveTo(numsX,numsY);
+                ctx.lineTo(numsNX,numsNY);
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = "#80aa33";
+                ctx.closePath();
+                ctx.stroke(); 
+                ctx.beginPath()
+                ctx.font="20px 黑体"
+                ctx.fillStyle="#f00"
+                ctx.fillText(160-this.num[i],numsX,numsY)
+            }      
         }
     },
     mounted() {
+        
         var d=document.querySelector(".d")
         var c3=document.getElementById("c3")
         var c4=document.getElementById("c4")
@@ -194,7 +305,9 @@ export default {
         c3.width=w;c3.height=h;
         c4.width=w;c4.height=h;
         c1.width=c1.parentElement.offsetWidth;c1.height=c1.parentElement.offsetHeight;
-        //var _this=this;
+        c2.width=c2.parentElement.offsetWidth;c2.height=c2.parentElement.offsetHeight;
+        var _this=this;
+        _this.drawxy();
         var time=document.querySelector(".time")
         setInterval(function(){
             time.innerHTML= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
@@ -207,6 +320,7 @@ export default {
         var a=[100]
         c.onmessage=function(e){
             a.unshift(parseInt(e.data))
+            //console.log(e)
         }
         this.num=a;
         
@@ -223,13 +337,13 @@ export default {
         height: 100%;
         position: relative;
     }
-    #c4{
+    #c4,#c2{
         position: absolute;
         top: 0;
         left: 0;
     }
     #c1{
-        border:1px solid #ccc;
+        /* border:1px solid #ccc; */
     }
     #header {
         position:relative;
