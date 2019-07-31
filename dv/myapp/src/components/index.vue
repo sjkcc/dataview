@@ -71,14 +71,14 @@ export default {
         }
     },
     watch: {
-       num(){
+       /*num(){
          if((160-this.num[0])>=80){
                 a3.play();
             }else{
                 a3.pause()
             }
             //console.log(this.num)
-       }
+       }*/
        
     },
     methods: {
@@ -220,21 +220,22 @@ export default {
                 ctx.fillText("75",70,c1.offsetHeight-200)
                 ctx.fillText("100",60,c1.offsetHeight-250)
             }
+
         },
         draw1(){
             var c2=document.getElementById("c2")
             var ctx=c2.getContext("2d")
-            ctx.clearRect(0,0,c2.offsetWidth,c2.offsetHeight)
             //绘制折线
-            for (var i=this.num.length-1,j=0;i>=0;i--){
+            
+            for (var i=this.num.length-1,j=-1;i>=0;i--){
                 //起始坐标
-                
-                //console.log(this.num[i],numsX,numsY,numsNX,numsNY)
+                j++;
+                //console.log(j)
                 var k=parseInt((c2.offsetWidth-200)/30)
-                if(j==k){
+                if(j>k){
                     ctx.clearRect(0,0,c2.offsetWidth,c2.offsetHeight)
-                    for(var i=k,j=0;i>0;i--){
-                        
+                    for(var i=k,j=-1;i>=0;i--){
+                        j++;
                         if(c2.offsetHeight<300){
                             var numsY = c2.offsetHeight-50-(160-this.num[i])
                             var numsNY = c2.offsetHeight-50-(160-this.num[i-1]);
@@ -245,27 +246,28 @@ export default {
                         var numsX = j*30+100;
                         //终止坐标
                         var numsNX = (j+1)*30+100;
-                        j++;
                         ctx.beginPath();
                         ctx.moveTo(numsX,numsY);
                         ctx.lineTo(numsNX,numsNY);
-                        ctx.lineWidth = 6;
-                        ctx.strokeStyle = "#80aa33";
-                        ctx.closePath();
+                        ctx.lineWidth =4;
+                        ctx.strokeStyle = "#0f0";
                         ctx.stroke(); 
+                        //ctx.closePath();
                         ctx.beginPath()
                         ctx.font="20px 黑体"
                         ctx.fillStyle="#f00"
-                        console.log(i,160-this.num[i])
-                        if(j==k){
-                            ctx.fillText(160-this.num[i-1],numsX,numsNY)
-                        }else{
-                            ctx.fillText(160-this.num[i],numsX,numsY)
-                        }
-                        
-                        //console.log(j)
+                        ctx.fillText(160-this.num[i],numsX,numsY)
+                        ctx.beginPath()
+                        ctx.arc(numsX,numsY,5,0*Math.PI/180,360*Math.PI/180)
+                        ctx.fillStyle="#ff0"
+                        ctx.fill()
+                        ctx.clearRect(0,c2.offsetHeight-50,c2.offsetWidth,c2.offsetHeight)
+                        ctx.beginPath()
+                        ctx.fillStyle="#395B73"
+                        ctx.fillText((new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2),numsX-80,c2.offsetHeight-30)
                     }
                 }else{
+                    ctx.clearRect(0,c2.offsetHeight-50,c2.offsetWidth,c2.offsetHeight)
                     if(c2.offsetHeight<300){
                         var numsY = c2.offsetHeight-50-(160-this.num[i])
                         var numsNY = c2.offsetHeight-50-(160-this.num[i-1]);
@@ -274,22 +276,26 @@ export default {
                         var numsNY = c2.offsetHeight-50-(160-this.num[i-1])*2;
                     }
                     var numsX = j*30+100;
-                    //终止坐标
                     var numsNX = (j+1)*30+100;
+                    ctx.beginPath();
+                    ctx.moveTo(numsX,numsY);
+                    ctx.lineTo(numsNX,numsNY);
+                    ctx.lineWidth =4;
+                    ctx.strokeStyle ="#0f0";
+                    ctx.stroke(); 
+                    ctx.closePath();
+                    ctx.beginPath()
+                    ctx.font="20px 黑体"
+                    ctx.fillStyle="#f00"
+                    ctx.fillText(160-this.num[i],numsX,numsY)
+                    ctx.beginPath()
+                    ctx.arc(numsX,numsY,5,0*Math.PI/180,360*Math.PI/180)
+                    ctx.fillStyle="#ff0"
+                    ctx.fill()
+                    ctx.beginPath()
+                    ctx.fillStyle="#395B73"
+                    ctx.fillText((new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2),numsX-80,c2.offsetHeight-30)
                 }
-                j++; 
-                //console.log(j)
-                ctx.beginPath();
-                ctx.moveTo(numsX,numsY);
-                ctx.lineTo(numsNX,numsNY);
-                ctx.lineWidth = 6;
-                ctx.strokeStyle = "#80aa33";
-                ctx.closePath();
-                ctx.stroke(); 
-                ctx.beginPath()
-                ctx.font="20px 黑体"
-                ctx.fillStyle="#f00"
-                ctx.fillText(160-this.num[i],numsX,numsY)
             }      
         }
     },
