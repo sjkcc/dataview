@@ -12,6 +12,11 @@
 							<div class="chart-div">
 								<div class="chart-loader"><div class="loader"></div></div>
                                 <div class="time">{{nowtime}}</div>
+                                <div class="switch">
+                                    <div class="switch-button"> 
+                                        <div class="switch-button-inner"></div>
+                                    </div>
+                                </div>
                             </div>
 						</div>
 					</div>
@@ -30,8 +35,28 @@
 					</div>
 					<div class="flex-cell flex-cell-r">
 						<div class="chart-wrapper">
-							<h3 class="chart-title"></h3>
+							<h3 class="chart-title">历史温度表</h3>
 							<div class="chart-div">
+                                <div class="table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    当前时间
+                                                </td>
+                                                <td>
+                                                    温度/℃
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(n,i) of num" :key="i">
+                                                <td>{{(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)}}</td>
+                                                <td>{{160-n}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
 							</div>
 						</div>
 					</div>
@@ -65,7 +90,7 @@
 export default {
     data(){
         return {
-            num:[],
+            num:[100],
             check:true,
             nowtime:new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
         }
@@ -299,8 +324,7 @@ export default {
             }      
         }
     },
-    mounted() {
-        
+    mounted() {       
         var d=document.querySelector(".d")
         var c3=document.getElementById("c3")
         var c4=document.getElementById("c4")
@@ -318,18 +342,45 @@ export default {
         setInterval(function(){
             time.innerHTML= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
         },1000)
+        function Switch(node) {
+            this.switchRoot = node;
+            this.switchRoot.onclick = this.switchClickEventHanlder;
+        }
+        var ws= null;
+        var a=[100]
+        var url="ws://127.0.0.1:9001";
+        ws=new WebSocket(url)
+        ws.onmessage=function(e){
+            a.unshift(parseInt(e.data))
+        }
+        console.log(a)
+        //this.num=a;
+        Switch.prototype.switchClickEventHanlder = function (e) {
+            if(e.target.className.indexOf("switch-button") < 0) return;
+            if(!this.classList.contains("checked")) {
+                this.classList.add("checked");
+                console.log("打开了链接")
+                _this.num=a;
+            } else{
+                this.classList.remove("checked");
+                console.log("关闭了链接")
+                _this.num=a.slice(0,22)
+            }
+            this.checked = !this.checked;
+        };
+        var switches = document.querySelectorAll(".switch");
+        if(typeof switches !== "undefined" && switches.length) {
+        for(var i = switches.length - 1; i >=0; --i){
+            new Switch(switches[i]);
+        }
+        }
         
 },
     created() {
-        var url="ws://127.0.0.1:9001";
-        var c=new WebSocket(url)
-        var a=[100]
-        c.onmessage=function(e){
-            a.unshift(parseInt(e.data))
-            //console.log(e)
-        }
-        this.num=a;
-        
+          
+
+
+          
     },
     updated(){
         this.draw()  
@@ -382,7 +433,23 @@ export default {
     .flex-cell-r {-webkit-flex:2;-ms-flex:2;flex:2;}
     .flex-cell-c {-webkit-flex:3;-ms-flex:3;flex:3;}
     .flex-cell-lc {-webkit-flex:5;-ms-flex:5;flex:5;}
-
+    .flex-cell-r .table{
+        width: 230px;
+        height: 200px;
+        margin: auto;
+        overflow: auto;
+        margin-bottom: 10px;
+    }
+    .flex-cell-r table{
+        width: 100%;
+        border: 1px solid #ffff00;
+        color:#ffff00;
+    }
+    .flex-cell-r table td{
+        border: 1px solid #ffff00;
+        text-align: center;
+        padding: 5px
+    }
     .chart-wrapper {position:relative;height:100%;}
     .chart-title {height:30px;font-size:20px;font-weight:normal;color:#5ac8fa;}
     .chart-div {
@@ -479,5 +546,103 @@ export default {
             -ms-transform: rotate(360deg);
             transform: rotate(360deg)
         }
+    }
+    .switch {
+        width:70px;
+        height:120px;
+        padding: 5px 5px;
+        margin:auto;
+        position:absolute;
+        top:65px;
+        left:150px;
+        z-index: 100;
+    }
+    .switch-button {
+        height:100%;
+        width:100%;
+        background: -webkit-linear-gradient(#f3f3f3, #fff);
+        background: -moz-linear-gradient(#f3f3f3, #fff);
+        background: -o-linear-gradient(#f3f3f3, #fff);
+        background: -ms-linear-gradient(#f3f3f3, #fff);
+        background: linear-gradient(#f3f3f3, #fff);
+        -webkit-border-radius: 30px;
+        border-radius: 30px;
+        overflow: auto;
+        position: relative;
+        top: 5%;
+        left: 7%;
+        cursor: pointer;
+        -webkit-box-shadow: 0 16px 8px -8px rgba(0,0,0,0.33) inset, 0 0 3px rgba(0,0,0,0.85);
+        box-shadow: 0 16px 8px -8px rgba(0,0,0,0.33) inset, 0 0 3px rgba(0,0,0,0.85);
+        z-index: 2;
+    }
+    .switch-button-inner {
+        width: 98%;
+        height: 87%;
+        margin: 0 1%;
+        background: -webkit-linear-gradient(#9d9d9d, #dedede, #f0f0f0);
+        background: -moz-linear-gradient(#9d9d9d, #dedede, #f0f0f0);
+        background: -o-linear-gradient(#9d9d9d, #dedede, #f0f0f0);
+        background: -ms-linear-gradient(#9d9d9d, #dedede, #f0f0f0);
+        background: linear-gradient(#9d9d9d, #dedede, #f0f0f0);
+        position: absolute;
+        bottom: 0;
+        -webkit-border-radius: 25px;
+        border-radius: 25px;
+        position: absolute;
+        z-index: 3;
+    }
+    .switch-button-inner:before {
+        content: "开始检测";
+        font-size: 10px;
+        height: 15px;
+        width: 50px;
+        text-align: center;
+        background-color: rgba(0,0,0,0.1);
+        border-bottom: 2px solid rgba(255,255,255,0.5);
+        position: absolute;
+        top: 10px;
+        left:9px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.2) inset;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2) inset;
+    }
+    .switch-button-inner:after {
+        content: "关闭监测";
+        font-size: 10px;
+        height: 15px;
+        width: 50px;
+        text-align: center;
+        border: 2px solid rgba(0,0,0,0.08);
+        position: absolute;
+        left:8px;
+        bottom: 10px;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        -webkit-box-shadow: 0 2px 0 rgba(255,255,255,0.7);
+        box-shadow: 0 2px 0 rgba(255,255,255,0.7);
+    }
+    .switch.checked .switch-button {
+        background-image: -webkit-linear-gradient(#fff, #f3f3f3);
+        background-image: -moz-linear-gradient(#fff, #f3f3f3);
+        background-image: -o-linear-gradient(#fff, #f3f3f3);
+        background-image: -ms-linear-gradient(#fff, #f3f3f3);
+        background-image: linear-gradient(#fff, #f3f3f3);
+        -webkit-box-shadow: 0 -3px 8px rgba(255,255,255,0.5) inset, 0 -15px 0px rgba(0,0,0,0.33) inset, 0 0 3px rgba(0,0,0,0.85);
+        box-shadow: 0 -3px 8px rgba(255,255,255,0.5) inset, 0 -15px 0px rgba(0,0,0,0.33) inset, 0 0 3px rgba(0,0,0,0.85);
+    }
+    .switch.checked .switch-button-inner {
+        background: -webkit-linear-gradient(#ddd, #dedede, #fff);
+        background: -moz-linear-gradient(#ddd, #dedede, #fff);
+        background: -o-linear-gradient(#ddd, #dedede, #fff);
+        background: -ms-linear-gradient(#ddd, #dedede, #fff);
+        background: linear-gradient(#ddd, #dedede, #fff);
+        bottom: auto;
+        top:0px;
+    }
+    .switch.checked .switch-button-inner:before {
+        height: 18px;
+    }
+    .switch.checked .switch-button-inner:after {
+        height: 16px;
     }
 </style>
