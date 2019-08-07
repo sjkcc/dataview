@@ -12,10 +12,21 @@
 							<div class="chart-div">
 								<div class="chart-loader"><div class="loader"></div></div>
                                 <div class="time">{{nowtime}}</div>
-                                <div class="switch">
+                                <!-- <div class="switch">
                                     <div class="switch-button"> 
-                                        <div class="switch-button-inner"></div>
+                                        <div class="switch-button-inner">
+                                            <div class="on">开始监测</div>
+					                        <div class="off">停止监测</div> 
+                                        </div>
                                     </div>
+                                </div> -->
+                                <div class="button ">
+                                    <span class="hole">
+                                        <span class="switch">
+                                        <div class="on"><span>开始监测</span></div>
+                                        <div class="off"><span>停止监测</span></div>
+                                        </span>
+                                    </span>
                                 </div>
                             </div>
 						</div>
@@ -39,9 +50,10 @@
 							<div class="chart-div">
                                 <div class="table">
                                     <table>
-                                        <thead>
+                                        <thead style="position: fixed;width:250px;top: 130px;right:151px;">
+                                            <tr><td colspan="2">共有{{num.length}}条数据</td></tr>
                                             <tr>
-                                                <td>
+                                                <td style="width:167px">
                                                     当前时间
                                                 </td>
                                                 <td>
@@ -51,7 +63,7 @@
                                         </thead>
                                         <tbody>
                                             <tr v-for="(n,i) of num" :key="i">
-                                                <td>{{(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)}}</td>
+                                                <td style="width:167px">{{(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)}}</td>
                                                 <td>{{160-n}}</td>
                                             </tr>
                                         </tbody>
@@ -90,7 +102,7 @@
 export default {
     data(){
         return {
-            num:[100],
+            num:[],
             check:true,
             nowtime:new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
         }
@@ -199,6 +211,31 @@ export default {
             ctx1.lineWidth=10
             ctx1.lineCap="round"
             ctx1.stroke()
+
+            //绘制圆环温度显示
+            ctx1.clearRect(380,135,380,160)
+            ctx1.beginPath();
+            ctx1.lineWidth=15;
+            ctx1.arc(400,150,100,0,360*Math.PI/180)
+            ctx1.strokeStyle="#aaa";
+            ctx1.stroke()
+
+            ctx1.beginPath();
+            ctx1.lineWidth=15;
+            ctx1.arc(400,150,100,-90*Math.PI/180,(-90+3.6*(160-this.num[0]))*Math.PI/180)
+            if((160-this.num[0])>=80){
+                ctx1.strokeStyle="#f00"
+            }else if((160-this.num[0])>=50&&(160-this.num[0])<80){
+                ctx1.strokeStyle="#ff0"
+            }else{
+                ctx1.strokeStyle="#0f0"
+            }
+            ctx1.stroke()
+            ctx.beginPath();
+            ctx1.font="30px 黑体"
+            
+            ctx1.fillText(160-this.num[0]+"℃",380,160)
+
         },
         drawxy(){
             var c1=document.getElementById("c1")
@@ -342,45 +379,43 @@ export default {
         setInterval(function(){
             time.innerHTML= new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
         },1000)
-        function Switch(node) {
-            this.switchRoot = node;
-            this.switchRoot.onclick = this.switchClickEventHanlder;
-        }
+        _this.num=[100,120,130]
         var ws= null;
-        var a=[100]
+        var a=[100,120,130]
         var url="ws://127.0.0.1:9001";
         ws=new WebSocket(url)
         ws.onmessage=function(e){
             a.unshift(parseInt(e.data))
         }
-        console.log(a)
-        //this.num=a;
-        Switch.prototype.switchClickEventHanlder = function (e) {
-            if(e.target.className.indexOf("switch-button") < 0) return;
-            if(!this.classList.contains("checked")) {
-                this.classList.add("checked");
+        var c2=document.getElementById("c2")
+        var k=parseInt((c2.offsetWidth-200)/30)
+        // var t=document.querySelector(".switch-button-inner")
+        // var s=document.querySelector(".switch")
+        // var on=document.querySelector(".switch-button-inner .on")
+        // var off=document.querySelector(".switch-button-inner .off")
+        var s=document.querySelector(".switch")
+        var on=document.querySelector(".switch .on")
+        var off=document.querySelector(".switch .off")
+        on.onclick = function () {
+            //console.log(s.classList)
+            if(!s.classList.contains("checked")) {
+                s.classList.add("checked");
                 console.log("打开了链接")
-                _this.num=a;
-            } else{
-                this.classList.remove("checked");
-                console.log("关闭了链接")
-                _this.num=a.slice(0,22)
+                _this.num=a
+                console.log(a)
             }
-            this.checked = !this.checked;
         };
-        var switches = document.querySelectorAll(".switch");
-        if(typeof switches !== "undefined" && switches.length) {
-        for(var i = switches.length - 1; i >=0; --i){
-            new Switch(switches[i]);
-        }
-        }
-        
-},
+        off.onclick = function () {
+            //console.log(s.classList)
+            if(s.classList.contains("checked")) {
+                s.classList.remove("checked");
+                console.log("关闭了链接")
+                _this.num=a.slice(0,k+1)
+            } 
+        };
+    },
     created() {
-          
 
-
-          
     },
     updated(){
         this.draw()  
@@ -398,9 +433,6 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
-    }
-    #c1{
-        /* border:1px solid #ccc; */
     }
     #header {
         position:relative;
@@ -434,15 +466,14 @@ export default {
     .flex-cell-c {-webkit-flex:3;-ms-flex:3;flex:3;}
     .flex-cell-lc {-webkit-flex:5;-ms-flex:5;flex:5;}
     .flex-cell-r .table{
-        width: 230px;
-        height: 200px;
+        width: 250px;
+        height: 180px;
         margin: auto;
         overflow: auto;
-        margin-bottom: 10px;
+        margin-top:80px;
     }
     .flex-cell-r table{
         width: 100%;
-        border: 1px solid #ffff00;
         color:#ffff00;
     }
     .flex-cell-r table td{
@@ -547,7 +578,7 @@ export default {
             transform: rotate(360deg)
         }
     }
-    .switch {
+    /*.switch {
         width:70px;
         height:120px;
         padding: 5px 5px;
@@ -571,7 +602,6 @@ export default {
         position: relative;
         top: 5%;
         left: 7%;
-        cursor: pointer;
         -webkit-box-shadow: 0 16px 8px -8px rgba(0,0,0,0.33) inset, 0 0 3px rgba(0,0,0,0.85);
         box-shadow: 0 16px 8px -8px rgba(0,0,0,0.33) inset, 0 0 3px rgba(0,0,0,0.85);
         z-index: 2;
@@ -591,13 +621,14 @@ export default {
         border-radius: 25px;
         position: absolute;
         z-index: 3;
-    }
-    .switch-button-inner:before {
-        content: "开始检测";
         font-size: 10px;
-        height: 15px;
-        width: 50px;
+
+    }
+    .switch-button-inner .on {
+        height:30px;
+        width:50px;
         text-align: center;
+        line-height: 30px;
         background-color: rgba(0,0,0,0.1);
         border-bottom: 2px solid rgba(255,255,255,0.5);
         position: absolute;
@@ -605,13 +636,13 @@ export default {
         left:9px;
         -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.2) inset;
         box-shadow: 0 1px 2px rgba(0,0,0,0.2) inset;
+        cursor: pointer;
     }
-    .switch-button-inner:after {
-        content: "关闭监测";
-        font-size: 10px;
-        height: 15px;
+    .switch-button-inner .off{
+        height:30px;
         width: 50px;
         text-align: center;
+        line-height: 30px;
         border: 2px solid rgba(0,0,0,0.08);
         position: absolute;
         left:8px;
@@ -620,6 +651,7 @@ export default {
         border-radius: 50%;
         -webkit-box-shadow: 0 2px 0 rgba(255,255,255,0.7);
         box-shadow: 0 2px 0 rgba(255,255,255,0.7);
+        cursor: pointer;
     }
     .switch.checked .switch-button {
         background-image: -webkit-linear-gradient(#fff, #f3f3f3);
@@ -644,5 +676,122 @@ export default {
     }
     .switch.checked .switch-button-inner:after {
         height: 16px;
+    }*/
+
+
+    .button {
+        position: absolute;
+        top:100px;
+        left:300px;
+        width: 120px;
+        height: 148px;
+        background-image: linear-gradient(to bottom, #464A54 0%, #2C2225 100%);
+        border-radius: 6px;
+        box-shadow: 0 -5px 0px #464649, 0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 1px #66696E inset, 4px 0 0 rgba(0, 0, 0, 0.1) inset, -4px 0 0 rgba(0, 0, 0, 0.1) inset, 0 -8px 2px rgba(0, 0, 0, 0.1) inset;
+        z-index: 100;
+    }
+    .button .hole {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: block;
+        width: 100px;
+        height: 125px;
+        overflow: hidden;
+        background-color: #090909;
+        border-radius: 8px;
+        box-shadow: 0 -2px 1px rgba(255, 255, 255, 0.25) inset, 0 2px 1px rgba(255, 255, 255, 0.2) inset;
+    }
+    .button .switch {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        display: block;
+        width: 90px;
+        height: 115px;
+        background-image: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.07) 0%, transparent 80%), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 0%, transparent 80%), radial-gradient(ellipse at center, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 50%), -webkit-gradient(linear, left top, left bottom, from(#882626), to(#290606));
+        background-image: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.07) 0%, transparent 80%), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 0%, transparent 80%), radial-gradient(ellipse at center, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 50%), linear-gradient(to bottom, #882626 0%, #290606 100%);
+        background-size: 100% 80px, 100% 80px, 10px 10px, 100%;
+        background-position: top left, bottom left, bottom left, center;
+        background-repeat: no-repeat, no-repeat, repeat, no-repeat;
+        border-radius: 8px;
+        box-shadow: 2px 0 1px rgba(255, 255, 255, 0.1) inset, -2px 0 1px rgba(255, 255, 255, 0.1) inset, 0 -2px 2px rgba(255, 255, 255, 0.05) inset, 0 4px 2px rgba(0, 0, 0, 0.05) inset, 0 -25px 8px rgba(198, 45, 45, 0.5), 0 -25px 8px rgba(198, 45, 45, 0.3), 0 -20px 8px rgba(198, 45, 45, 0.4), 0 -15px 8px rgba(198, 45, 45, 0.5), 0 -10px 8px rgba(198, 45, 45, 0.6), 0 -5px 8px rgba(198, 45, 45, 0.9);
+        transform-style: preserve3d;
+        transform-origin: center center;
+        transform: perspective(1500px) rotateX(-35deg) translateY(13px);
+        transition: transform 200ms ease;
+    }
+    .button .switch:before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: 5px;
+        width: 85px;
+        height: 5px;
+        background-image: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.4) 0%, transparent 80%);
+    }
+    .button .switch .on {
+        position: absolute;
+        top:0px;
+        left:0px;
+        width:100%;
+        height:50px;
+        text-align:center;
+        cursor: pointer;
+        color:#fff;
+    }
+    .button .switch .on span{
+        display:inline-block;
+        padding:5px;
+        margin-top:10px;
+        box-shadow: 0 2px 20px white inset;
+        border-radius:5px;
+    }
+    .button .switch .off {
+        position: absolute;
+        bottom:5px;
+        left:0px;
+        width:100%;
+        height:50px;
+        text-align:center;
+        cursor: pointer;
+        color:#fff;
+    }
+    .button .switch .off span{
+        display:inline-block;
+        padding:5px;
+        margin-top:10px;
+        box-shadow: 0 2px 20px white inset;
+        border-radius:5px;
+    }
+    .button  .hole .switch.checked {
+    background-image: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.07) 0%, transparent 80%), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 0%, transparent 80%), radial-gradient(ellipse at center, rgba(254, 244, 0, 0.5) 0%, rgba(254, 244, 0, 0.2) 30%, rgba(254, 244, 0, 0.1) 50%, transparent 80%), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.05) 30%, transparent 50%), linear-gradient(to bottom, #B43222 0%, #A51810 100%);
+    background-size: 100% 80px, 100% 80px, 100% 180px, 10px 10px, 100%;
+    background-position: top left, bottom left, 0 30px, bottom left, center;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+    border-radius: 8px;
+    box-shadow: 4px 0 1px rgba(255, 255, 255, 0.15) inset, -4px 0 1px rgba(255, 255, 255, 0.15) inset, 0 4px 1px rgba(255, 255, 255, 0.15) inset, 0 -12px 8px rgba(0, 0, 0, 0.25) inset, 0 35px 8px rgba(128, 17, 5, 0.5), 0 25px 8px rgba(128, 17, 5, 0.3), 0 20px 8px rgba(128, 17, 5, 0.4), 0 15px 8px rgba(128, 17, 5, 0.5), 0 10px 8px rgba(128, 17, 5, 0.6), 0 5px 8px rgba(128, 17, 5, 0.9);
+    transform: perspective(1500px) rotateX(40deg) translateY(-17px);
+    }
+    .button .hole .switch.checked:before {
+    top: auto;
+    bottom: -2px;
+    }
+    .button .hole .switch.checked:after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: calc(5%);
+    width: 80px;
+    height: 15px;
+    border-radius: 50%;
+    background-image: radial-gradient(ellipse at center, #FEF400 0%, rgba(254, 244, 0, 0.3) 60%, transparent 100%);
+    filter: blur(8px);
+    }
+    .button .hole .switch.checked .on {
+    color:#000;
+    }
+    .button .hole .switch.checked .off {
+    color:#000;
     }
 </style>

@@ -6,8 +6,9 @@ import Index1 from "./components/index1.vue"
 Vue.use(Router)
 
 export default new Router({
+  mode:"history",
   routes: [
-    {path:"/Index",component:Index},
+    {path:"/",component:Index},
     {path:"/Index1",component:Index1},
     {
       path: '/',
