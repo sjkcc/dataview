@@ -1,7 +1,7 @@
 <template>
     <div>
         <header id="header">
-			<h3 class="header-title">矿洞环境监测</h3>
+			<h3 class="header-title">温度监测</h3>
 		</header>
 		
 		<div id="container">
@@ -48,19 +48,21 @@
 						<div class="chart-wrapper">
 							<h3 class="chart-title">历史温度表</h3>
 							<div class="chart-div">
+                                <div style="width:250px;margin:0 auto"><!--大屏 130  151-->
+                                    <table>
+                                        <tr><td colspan="2">共有{{num.length}}条数据</td></tr>
+                                        <tr>
+                                            <td style="width:167px">
+                                                当前时间
+                                            </td>
+                                            <td>
+                                                温度/℃
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                                 <div class="table">
                                     <table>
-                                        <thead style="position: fixed;width:250px;top: 130px;right:151px;">
-                                            <tr><td colspan="2">共有{{num.length}}条数据</td></tr>
-                                            <tr>
-                                                <td style="width:167px">
-                                                    当前时间
-                                                </td>
-                                                <td>
-                                                    温度/℃
-                                                </td>
-                                            </tr>
-                                        </thead>
                                         <tbody>
                                             <tr v-for="(n,i) of num" :key="i">
                                                 <td style="width:167px">{{(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)}}</td>
@@ -213,16 +215,16 @@ export default {
             ctx1.stroke()
 
             //绘制圆环温度显示
-            ctx1.clearRect(380,135,380,160)
+            ctx1.clearRect(350,85,350,120)//380  135  160
             ctx1.beginPath();
             ctx1.lineWidth=15;
-            ctx1.arc(400,150,100,0,360*Math.PI/180)
+            ctx1.arc(370,100,80,0,360*Math.PI/180)
             ctx1.strokeStyle="#aaa";
             ctx1.stroke()
 
             ctx1.beginPath();
             ctx1.lineWidth=15;
-            ctx1.arc(400,150,100,-90*Math.PI/180,(-90+3.6*(160-this.num[0]))*Math.PI/180)
+            ctx1.arc(370,100,80,-90*Math.PI/180,(-90+3.6*(160-this.num[0]))*Math.PI/180)
             if((160-this.num[0])>=80){
                 ctx1.strokeStyle="#f00"
             }else if((160-this.num[0])>=50&&(160-this.num[0])<80){
@@ -234,7 +236,7 @@ export default {
             ctx.beginPath();
             ctx1.font="30px 黑体"
             
-            ctx1.fillText(160-this.num[0]+"℃",380,160)
+            ctx1.fillText(160-this.num[0]+"℃",350,110)  //380  160
 
         },
         drawxy(){
@@ -467,10 +469,9 @@ export default {
     .flex-cell-lc {-webkit-flex:5;-ms-flex:5;flex:5;}
     .flex-cell-r .table{
         width: 250px;
-        height: 180px;
+        height: 140px;  /*大屏 180*/
         margin: auto;
         overflow: auto;
-        margin-top:80px;
     }
     .flex-cell-r table{
         width: 100%;
@@ -502,6 +503,7 @@ export default {
         .flex-cell {padding:10px;}
         .chart-title {height:24px;font-size:16px;}
         .chart-div {top:24px;}
+
     }
     .time{
         width: 200px;
@@ -511,7 +513,7 @@ export default {
         color: #0f0;
         position:absolute;
         right:10px;
-        top:20px;
+        top:10px;
         border:2px solid rgba(215, 252, 9, 0.753);
         border-radius:5px;
     }
@@ -681,8 +683,8 @@ export default {
 
     .button {
         position: absolute;
-        top:100px;
-        left:300px;
+        top:60px; /*  大屏 100 300 */
+        left:150px;
         width: 120px;
         height: 148px;
         background-image: linear-gradient(to bottom, #464A54 0%, #2C2225 100%);

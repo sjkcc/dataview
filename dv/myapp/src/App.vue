@@ -14,8 +14,8 @@ ol,ul{list-style:none;}
 html, body {
   width:100%;
   height:100%;
-  min-width:1400px;
-  min-height:800px;
+  min-width:1200px;
+  min-height:600px;
   overflow:hidden;
 }
 body {
