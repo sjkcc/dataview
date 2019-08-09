@@ -89,9 +89,9 @@
 					</div>
 					<div class="flex-cell flex-cell-r">
 						<div class="chart-wrapper">
-							<h3 class="chart-title"></h3>
+							<h3 class="chart-title">饼图</h3>
 							<div class="chart-div">
-                                
+                                <canvas id="cb"></canvas>
 							</div>
 						</div>
 					</div>
@@ -134,6 +134,8 @@ export default {
             var ctx=c3.getContext("2d")
             var c4=document.getElementById("c4")
             var ctx1=c4.getContext("2d")
+            var cb=document.getElementById("cb")
+            var ctx2=cb.getContext("2d")
             //绘制温度计外框
             //console.log(this.num)
             ctx.beginPath();
@@ -235,8 +237,10 @@ export default {
             ctx1.stroke()
             ctx.beginPath();
             ctx1.font="30px 黑体"
-            
             ctx1.fillText(160-this.num[0]+"℃",350,110)  //380  160
+
+            //绘制饼图
+
 
         },
         drawxy(){
@@ -369,12 +373,14 @@ export default {
         var c4=document.getElementById("c4")
         var c1=document.getElementById("c1")
         var c2=document.getElementById("c2")
+        var cb=document.getElementById("cb")
         var w=d.offsetWidth;
         var h=d.offsetHeight;
         c3.width=w;c3.height=h;
         c4.width=w;c4.height=h;
         c1.width=c1.parentElement.offsetWidth;c1.height=c1.parentElement.offsetHeight;
         c2.width=c2.parentElement.offsetWidth;c2.height=c2.parentElement.offsetHeight;
+        cb.width=cb.parentElement.offsetWidth;cb.height=cb.parentElement.offsetHeight;
         var _this=this;
         _this.drawxy();
         var time=document.querySelector(".time")
