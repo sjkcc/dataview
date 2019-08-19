@@ -1,7 +1,6 @@
 const ws=require("ws");
 var server =new ws.Server({port:9001});
 console.log("ws 服务器开始监听端口");
-
 server.on("connection",socket=>{
     var num=100;
     //var num1=100
@@ -12,6 +11,7 @@ server.on("connection",socket=>{
         socket.send(num)
         //socket.send(num1)
     },2000)
+    
     socket.on("message",msg=>{
         console.log("服务器接收到的信息"+msg)
     })

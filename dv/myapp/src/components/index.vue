@@ -39,8 +39,7 @@
                                     <canvas id="c3"></canvas>
                                     <canvas id="c4"></canvas>
                                 </div>
-                                    <!-- <input type="checkbox" id="c3" v-model="check">音乐 -->
-                                <audio id="a3" src="../assets/w.mp3"></audio>
+                                <div id="sound"></div>
                             </div>
 						</div>
 					</div>
@@ -53,7 +52,7 @@
                                         <tr><td colspan="2">共有{{num.length}}条数据</td></tr>
                                         <tr>
                                             <td style="width:167px">
-                                                当前时间
+                                                监测温度时刻
                                             </td>
                                             <td>
                                                 温度/℃
@@ -65,7 +64,7 @@
                                     <table>
                                         <tbody>
                                             <tr v-for="(n,i) of num" :key="i">
-                                                <td style="width:167px">{{(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)}}</td>
+                                                <td style="width:167px">{{(new Date(htime+(num.length-i-1)*2000).getMonth()+1)+"月"+new Date(htime+(num.length-i-1)*2000).getDate()+"日"+" "+("0"+new Date(htime+(num.length-i-1)*2000).getHours()).slice(-2)+":"+("0"+new Date(htime+(num.length-i-1)*2000).getMinutes()).slice(-2)+":"+("0"+new Date(htime+(num.length-i-1)*2000).getSeconds()).slice(-2)}}</td>
                                                 <td>{{160-n}}</td>
                                             </tr>
                                         </tbody>
@@ -106,28 +105,13 @@ export default {
         return {
             num:[],
             check:true,
-            nowtime:new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2)
+            nowtime:new Date().getFullYear()+"年"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2),
+            htime:0
         }
     },
-    watch: {
-       /*num(){
-         if((160-this.num[0])>=80){
-                a3.play();
-            }else{
-                a3.pause()
-            }
-            //console.log(this.num)
-       }*/
-       
-    },
     methods: {
-        onchange(){
-            var a3=document.getElementById("a3")
-            if((160-this.num[0])>=80){
-                a3.play();
-            }else{
-                a3.pause()
-            }
+        sounds(){
+           
         },
         draw(){
             var c3=document.getElementById("c3")
@@ -184,6 +168,9 @@ export default {
             ctx1.lineTo(200,150)
             if((160-this.num[0])>=80){
                 ctx1.strokeStyle="#f00"
+                var html=`<audio id="a3" src="../assets/w.mp3"></audio>`
+                document.getElementById("sound").innerHTML=html;
+                //a3.play()
                 this.$message({
                     message:"警告！警告！温度过高！请及时处理",
                     type:"error",
@@ -240,8 +227,81 @@ export default {
             ctx1.fillText(160-this.num[0]+"℃",350,110)  //380  160
 
             //绘制饼图
+            var x=0,y=0,z=0,l=this.num.length;
+            for(var i of this.num){
+                if((160-i)<=50){
+                    x++
+                }else if((160-i)>50&&(160-i)<80){
+                    y++
+                }else{
+                    z++
+                }
+            }
+            //console.log(x,y,z,l,x/l*360)
+            ctx2.beginPath();
+            ctx2.lineWidth=5;
+            ctx2.arc(150,100,80,-90*Math.PI/180,(90+100*x/l)*Math.PI/180)
+            console.log(-90*Math.PI/180,(90+100*x/l)*Math.PI/180)
+            ctx2.lineTo(150,100)
+            ctx2.fillStyle="#0f0"
+            ctx2.fill()
+            ctx2.fillStyle="#000"
+            ctx2.font="15px 黑体"
+            ctx2.fillText("50℃以内",155,60)
+            ctx2.fillText("数量："+x,155,80)
+            ctx2.fillText((x/l*100).toFixed(1)+"%",155,100)
 
+            ctx2.beginPath();
+            ctx2.arc(150,100,80,(90+100*x/l)*Math.PI/180,(90+100*x/l+100*z/l)*Math.PI/180)
+            
+            ctx2.lineTo(150,100)
+            ctx2.fillStyle="#f00"
+            ctx2.fill()
 
+            ctx2.beginPath();
+            ctx2.arc(150,100,80,(90+100*x/l+100*z/l)*Math.PI/180,-90*Math.PI/180)
+           
+            ctx2.lineTo(150,100)
+            ctx2.fillStyle="#ff0"
+            ctx2.fill()
+
+            var timer;
+            var r=80,cx=150,cy=100
+            cb.onmousemove=function(e){
+                if(timer!==undefined){
+                    clearTimeout(timer)
+                }
+                timer=setTimeout(function(){
+                    console.log(e.offsetX,e.offsetY)
+                    //计算鼠标指针位置距离圆心的长度
+                    var w=e.offsetX;var h=e.offsetY
+                    var dx=Math.abs(w-cx)
+                    var dy=Math.abs(h-cy)
+                    var length=Math.sqrt(dx*dx+dy*dy)
+                    
+                    console.log(Math.atan2(dx,dy))
+                    
+                    if(w>80&&w<150&&h<100){
+                        ctx2.fillText("50-80℃数量",5,40)
+                        ctx2.fillText(y+"个",5,60)
+                    }else{
+                        ctx2.clearRect(0,0,88,50,)
+                        ctx2.clearRect(0,0,50,70,)
+                    }
+                    if(z!=0){
+                        if(w>80&&w<100&&h>120&&h<150){
+                            ctx2.fillText("80℃以上",3,150)
+                            ctx2.fillText("的数量"+z,3,170)
+                        }else{
+                            ctx2.clearRect(0,70,70,180,)
+                        }
+                    }
+                },200)
+            }
+            cb.onmouseleave=function(){
+                
+            }
+            
         },
         drawxy(){
             var c1=document.getElementById("c1")
@@ -365,15 +425,20 @@ export default {
                     ctx.fillText((new Date().getMonth()+1)+"月"+new Date().getDate()+"日"+" "+("0"+new Date().getHours()).slice(-2)+":"+("0"+new Date().getMinutes()).slice(-2)+":"+("0"+new Date().getSeconds()).slice(-2),numsX-80,c2.offsetHeight-30)
                 }
             }      
+        },
+        save(){
+            
         }
     },
-    mounted() {       
+    mounted() {     
+        var _this=this;  
         var d=document.querySelector(".d")
         var c3=document.getElementById("c3")
         var c4=document.getElementById("c4")
         var c1=document.getElementById("c1")
         var c2=document.getElementById("c2")
         var cb=document.getElementById("cb")
+        var ctx2=cb.getContext("2d")
         var w=d.offsetWidth;
         var h=d.offsetHeight;
         c3.width=w;c3.height=h;
@@ -381,7 +446,7 @@ export default {
         c1.width=c1.parentElement.offsetWidth;c1.height=c1.parentElement.offsetHeight;
         c2.width=c2.parentElement.offsetWidth;c2.height=c2.parentElement.offsetHeight;
         cb.width=cb.parentElement.offsetWidth;cb.height=cb.parentElement.offsetHeight;
-        var _this=this;
+        //console.log(cb.getBoundingClientRect())
         _this.drawxy();
         var time=document.querySelector(".time")
         setInterval(function(){
@@ -407,23 +472,45 @@ export default {
         on.onclick = function () {
             //console.log(s.classList)
             if(!s.classList.contains("checked")) {
-                s.classList.add("checked");
-                console.log("打开了链接")
-                _this.num=a
-                console.log(a)
+                _this.$confirm('是否开始监测', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    s.classList.add("checked");
+                    console.log("打开了链接")
+                    _this.num=a
+                    //console.log(a)
+                }).catch(() => {
+                    _this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });          
+                });
             }
         };
         off.onclick = function () {
             //console.log(s.classList)
             if(s.classList.contains("checked")) {
-                s.classList.remove("checked");
-                console.log("关闭了链接")
-                _this.num=a.slice(0,k+1)
+                _this.$confirm('是否停止监测', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    s.classList.remove("checked");
+                    console.log("关闭了链接")
+                    _this.num=a.slice(0,k+1)
+                }).catch(() => {
+                    _this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });          
+                });
             } 
         };
+        
+        
     },
     created() {
-
+        this.htime=new Date().getTime()-4000
     },
     updated(){
         this.draw()  
@@ -441,6 +528,9 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
+    }
+    #cb{
+        cursor: pointer;
     }
     #header {
         position:relative;
